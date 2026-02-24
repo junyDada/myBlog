@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="About - Learn more about me and my work.">
+  <title>About - Your Name</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="top-bar__left">
+      <button class="menu-toggle" aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a href="index.html" class="logo">Your Name</a>
+    </div>
+    <div class="top-bar__right">
+      <nav class="top-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+      </nav>
+      <button class="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Side Navigation Overlay -->
+  <div class="side-nav-overlay"></div>
+
+  <!-- Side Navigation -->
+  <nav class="side-nav">
+    <div class="side-nav__header">
+      <a href="index.html" class="logo">Your Name</a>
+      <button class="side-nav__close" aria-label="Close navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="side-nav__content">
+      <ul class="side-nav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="posts/post-template.html">All Posts</a></li>
+      </ul>
+      
+      <div class="side-nav__section">
+        <h3 class="side-nav__section-title">More</h3>
+        <ul class="side-nav__links">
+          <li><a href="#">Projects</a></li>
+          <li><a href="#">Newsletter</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="container">
+      
+      <!-- About Section -->
+      <article class="about-page">
+        <h1>About Me</h1>
+        
+        <div class="about-content">
+          <p>
+            Hello! I'm a designer and developer passionate about creating thoughtful digital 
+            experiences. I believe in the power of simplicity and the importance of sweating 
+            the small details that make products feel truly refined.
+          </p>
+          
+          <p>
+            Currently, I'm based in San Francisco where I work on building products that help 
+            people do their best work. Before this, I spent several years working at various 
+            startups and agencies, learning the craft of design and development from talented 
+            people across the industry.
+          </p>
+          
+          <p>
+            When I'm not at my desk, you'll find me exploring the city with my camera, hiking 
+            in the nearby hills, or getting lost in a good book. I'm particularly interested 
+            in the intersection of technology and creativity—how tools shape the way we think 
+            and create.
+          </p>
+          
+          <p>
+            This blog is my space to share thoughts on design, technology, photography, and 
+            whatever else catches my attention. I write for myself first, but I hope you find 
+            something useful or interesting here too.
+          </p>
+          
+          <p>
+            If you'd like to get in touch, feel free to reach out on 
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a> or 
+            send me an <a href="mailto:hello@example.com">email</a>. I'm always happy to chat 
+            about design, technology, or anything else.
+          </p>
+        </div>
+      </article>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>&copy; 2024 Your Name. All rights reserved.</p>
+      </footer>
+
+    </div>
+  </main>
+
+  <!-- JavaScript -->
+  <script src="js/main.js"></script>
+</body>
+</html>
