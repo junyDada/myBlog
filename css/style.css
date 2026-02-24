@@ -407,7 +407,7 @@ p {
 
 .hero__inner {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--spacing-xl);
 }
 
@@ -417,24 +417,24 @@ p {
 
 .hero__title {
   font-size: 4rem;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   letter-spacing: -0.03em;
 }
 
 .hero__bio {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: var(--color-text-secondary);
-  line-height: 1.8;
+  line-height: 1.7;
 }
 
 .hero__photo {
   flex-shrink: 0;
-  width: 180px;
+  width: 220px;
 }
 
 .hero__photo img {
-  width: 180px;
-  height: 180px;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
   object-fit: cover;
   object-position: center top;
