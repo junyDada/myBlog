@@ -722,6 +722,12 @@ p {
   margin-bottom: var(--spacing-lg);
 }
 
+#cusdis_thread iframe {
+  width: 100% !important;
+  min-height: 400px !important;
+  overflow: visible !important;
+}
+
 /* ============================================
    FOOTER
    ============================================ */
