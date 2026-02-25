@@ -722,10 +722,16 @@ p {
   margin-bottom: var(--spacing-lg);
 }
 
+#cusdis_thread {
+  width: 100%;
+}
+
 #cusdis_thread iframe {
   width: 100% !important;
-  min-height: 400px !important;
-  overflow: visible !important;
+  height: 600px !important;
+  border: none !important;
+  overflow: hidden !important;
+  display: block !important;
 }
 
 /* ============================================
