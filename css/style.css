@@ -722,17 +722,6 @@ p {
   margin-bottom: var(--spacing-lg);
 }
 
-#cusdis_thread {
-  width: 100%;
-}
-
-#cusdis_thread iframe {
-  width: 100% !important;
-  height: 600px !important;
-  border: none !important;
-  overflow: hidden !important;
-  display: block !important;
-}
 
 /* ============================================
    FOOTER
