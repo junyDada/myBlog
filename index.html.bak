@@ -94,6 +94,17 @@
       <section class="posts-section">
         <h2 class="section-title">Recent Writing</h2>
         <ul class="posts-list">
+          <li class="post-item">
+            <a href="posts/i-built-this-website-with-ai-but-i-did-it-my-way.html" class="post-item__link">
+              <article>
+                <h3 class="post-item__title">I Built This Website With AI, But I Did It My Way</h3>
+                <p class="post-item__excerpt">Built with AI, Directed by a Human</p>
+                <p class="post-item__meta">
+                  <time datetime="2026-02-26">February 26, 2026</time> · 1 min read
+                </p>
+              </article>
+            </a>
+          </li>
           <!-- Posts will be added here -->
         </ul>
       </section>
