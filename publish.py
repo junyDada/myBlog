@@ -329,7 +329,55 @@ def download_google_doc(doc_id: str) -> str:
     if len(response.text) < 100:
         raise PublishError("Downloaded content is too small. The document might be empty.")
     
-    return response.text
+    print(f"   ✅ Downloaded ({len(response.text):,} bytes)\n")
+    return response.text, {}
+
+def load_local_zip(zip_path: str) -> tuple:
+    """
+    Load a Google Doc exported as Web Page (.html, zipped).
+    Returns (html_string, images_dict) where images_dict maps
+    original src paths to image bytes.
+    """
+    import zipfile
+    
+    zip_path = Path(zip_path)
+    if not zip_path.exists():
+        raise PublishError(f"Zip file not found: {zip_path}")
+    
+    print(f"📦 Loading zip file: {zip_path.name}...")
+    
+    html = None
+    images = {}
+    
+    try:
+        with zipfile.ZipFile(zip_path, 'r') as zf:
+            names = zf.namelist()
+            
+            # Find the HTML file
+            html_files = [n for n in names if n.endswith('.html')]
+            if not html_files:
+                raise PublishError("No HTML file found in zip. Make sure you exported as 'Web Page (.html, zipped)'.")
+            
+            html_file = html_files[0]
+            html = zf.read(html_file).decode('utf-8')
+            print(f"   ✅ Found HTML: {html_file}")
+            
+            # Load all images
+            image_files = [n for n in names if any(
+                n.lower().endswith(ext) for ext in ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg']
+            )]
+            
+            for img_name in image_files:
+                images[img_name] = zf.read(img_name)
+            
+            print(f"   ✅ Found {len(images)} images")
+    
+    except zipfile.BadZipFile:
+        raise PublishError("File is not a valid zip file.")
+    
+    print()
+    return html, images
+
 
 
 # =============================================================================
@@ -432,7 +480,7 @@ def process_list(elem) -> str:
     return f'<{tag}>\n            ' + '\n            '.join(items) + f'\n          </{tag}>'
 
 
-def parse_google_doc_html(html: str, post_slug: str, blog_root: Path) -> dict:
+def parse_google_doc_html(html: str, post_slug: str, blog_root: Path, local_images: dict = None) -> dict:
     """Parse Google Doc HTML and extract structured content."""
     soup = BeautifulSoup(html, 'html.parser')
     
@@ -465,17 +513,36 @@ def parse_google_doc_html(html: str, post_slug: str, blog_root: Path) -> dict:
         text = elem.get_text(strip=True)
         
         if elem.name == 'img':
-            # Handle images
             src = elem.get('src', '')
             if src and src not in processed_images:
                 processed_images.add(src)
                 img_index += 1
-                local_filename = download_image(src, images_dir, img_index)
-                if local_filename:
-                    # Path relative from posts/ folder
-                    img_path = f"../{IMAGES_DIR}/{post_slug}/{local_filename}"
-                    alt = elem.get('alt', f'Image {img_index}')
-                    content_parts.append(f'<figure><img src="{img_path}" alt="{alt}" loading="lazy"></figure>')
+                alt = elem.get('alt', f'Image {img_index}')
+                
+                if local_images:
+                    # Find matching image in zip by filename
+                    src_filename = Path(src).name.split('?')[0]
+                    matched_key = next(
+                        (k for k in local_images if Path(k).name == src_filename), None
+                    )
+                    if matched_key:
+                        # Save image from zip
+                        ext = Path(matched_key).suffix or '.png'
+                        import hashlib
+                        url_hash = hashlib.md5(src.encode()).hexdigest()[:8]
+                        filename = f"img_{img_index:02d}_{url_hash}{ext}"
+                        filepath = images_dir / filename
+                        filepath.write_bytes(local_images[matched_key])
+                        print(f"   📷 Saved from zip: {filename}")
+                        img_path = f"../{IMAGES_DIR}/{post_slug}/{filename}"
+                        content_parts.append(f'<figure><img src="{img_path}" alt="{alt}" loading="lazy"></figure>')
+                    else:
+                        print(f"   ⚠️  Image not found in zip: {src_filename}")
+                else:
+                    local_filename = download_image(src, images_dir, img_index)
+                    if local_filename:
+                        img_path = f"../{IMAGES_DIR}/{post_slug}/{local_filename}"
+                        content_parts.append(f'<figure><img src="{img_path}" alt="{alt}" loading="lazy"></figure>')
             continue
         
         if not text:
@@ -787,30 +854,38 @@ Examples:
     
     print("   ✅ Environment OK\n")
     
-    # Extract document ID
-    try:
-        doc_id = extract_doc_id(args.url)
-        print(f"📄 Document ID: {doc_id}")
-    except PublishError as e:
-        print(f"❌ {e}")
-        sys.exit(1)
+    # Detect if input is a zip file or a URL
+    local_images = {}
+    is_zip = args.url.endswith('.zip') or (Path(args.url).exists() and Path(args.url).suffix == '.zip')
     
-    # Download the document
-    try:
-        html = download_google_doc(doc_id)
-        print(f"   ✅ Downloaded ({len(html):,} bytes)\n")
-    except PublishError as e:
-        print(f"❌ {e}")
-        sys.exit(1)
+    if is_zip:
+        try:
+            html, local_images = load_local_zip(args.url)
+        except PublishError as e:
+            print(f"❌ {e}")
+            sys.exit(1)
+    else:
+        try:
+            doc_id = extract_doc_id(args.url)
+            print(f"📄 Document ID: {doc_id}")
+        except PublishError as e:
+            print(f"❌ {e}")
+            sys.exit(1)
+        
+        try:
+            html, _ = download_google_doc(doc_id)
+        except PublishError as e:
+            print(f"❌ {e}")
+            sys.exit(1)
     
     # Parse to get title first (for slug generation)
     print("📝 Parsing document...")
     try:
-        temp_data = parse_google_doc_html(html, "temp", BLOG_ROOT)
+        temp_data = parse_google_doc_html(html, "temp", BLOG_ROOT, local_images)
     except PublishError as e:
         print(f"❌ {e}")
         sys.exit(1)
-    
+        
     if not temp_data['title']:
         print("❌ Could not extract title from document.")
         print("   Make sure your document has a heading at the top (Heading 1 or 2).")
@@ -841,7 +916,7 @@ Examples:
     
     # Now parse again with correct slug for images
     print(f"\n📥 Processing content and images...")
-    parsed = parse_google_doc_html(html, post_slug, BLOG_ROOT)
+    parsed = parse_google_doc_html(html, post_slug, BLOG_ROOT, local_images)
     
     # Get subtitle from user
     print("\n" + "="*50)
