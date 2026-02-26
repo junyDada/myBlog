@@ -682,11 +682,11 @@ def generate_post_html(template_path: Path, post_data: dict) -> tuple[str, list[
     return template, warnings
 
 
-def update_index_page(index_path: Path, post_data: dict) -> tuple[bool, str]:
-    """Add the new post to the index page's post list. Returns (success, message)."""
+def update_index_page(index_path: Path, post_data: dict) -> tuple:
+    """Add or update the post entry in the index page. Returns (success, message)."""
     content = index_path.read_text(encoding='utf-8')
     original = content
-    
+
     # Create the new post entry
     new_entry = f'''<li class="post-item">
             <a href="posts/{post_data['filename']}" class="post-item__link">
@@ -699,8 +699,20 @@ def update_index_page(index_path: Path, post_data: dict) -> tuple[bool, str]:
               </article>
             </a>
           </li>'''
-    
-    # Try to add after <ul class="posts-list">
+
+    # Check if this post already exists in the index
+    existing_pattern = rf'<li class="post-item">.*?href="posts/{re.escape(post_data["filename"])}".*?</li>'
+    if re.search(existing_pattern, content, re.DOTALL):
+        # Update existing entry
+        content = re.sub(existing_pattern, new_entry, content, flags=re.DOTALL)
+        if content == original:
+            return False, "Found existing entry but could not update it"
+        backup_path = index_path.with_suffix('.html.bak')
+        shutil.copy(index_path, backup_path)
+        index_path.write_text(content, encoding='utf-8')
+        return True, f"Updated existing entry in index.html (backup: {backup_path.name})"
+
+    # Not found — insert as new entry
     pattern = r'(<ul class="posts-list">)\s*'
     if re.search(pattern, content):
         content = re.sub(
@@ -708,23 +720,19 @@ def update_index_page(index_path: Path, post_data: dict) -> tuple[bool, str]:
             f'\\1\n          {new_entry}\n          ',
             content
         )
-    # Fallback: try adding after the comment
     elif '<!-- Posts will be added here -->' in content:
         content = content.replace(
             '<!-- Posts will be added here -->',
             f'{new_entry}\n          <!-- Posts will be added here -->'
         )
-    
+
     if content == original:
         return False, "Could not find insertion point in index.html"
-    
-    # Backup original
+
     backup_path = index_path.with_suffix('.html.bak')
     shutil.copy(index_path, backup_path)
-    
     index_path.write_text(content, encoding='utf-8')
-    return True, f"Updated index.html (backup: {backup_path.name})"
-
+    return True, f"Added new entry to index.html (backup: {backup_path.name})"
 
 # =============================================================================
 # GIT OPERATIONS
